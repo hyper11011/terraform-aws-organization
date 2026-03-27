@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -180,7 +179,35 @@ variable "tagging_policies" {
     target_id = optional(string)
     # If the organizational unit already exists, this is the target ID to attach the policy to
   }))
-  default = {}
+  default = {
+    network_resources = {
+      description = "Tagging policy for network resources to improve network performance monitoring and cost allocation"
+      content = jsonencode({
+        tags = {
+          NetworkEnvironment = {
+            tag_key = "NetworkEnvironment"
+            enforcement_mode = "detect"
+          }
+          NetworkOwner = {
+            tag_key = "NetworkOwner"
+            enforcement_mode = "detect"
+          }
+          VPC = {
+            tag_key = "VPC"
+            enforcement_mode = "detect"
+          }
+          SubnetType = {
+            tag_key = "SubnetType"
+            enforcement_mode = "detect"
+          }
+          CostCenter = {
+            tag_key = "CostCenter"
+            enforcement_mode = "detect"
+          }
+        }
+      })
+    }
+  }
 }
 
 variable "backup_policies" {
