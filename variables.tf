@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -54,7 +53,7 @@ variable "organization" {
 }
 
 variable "enable_aws_services" {
-  description = "A list of AWS services to enable for the organization."
+  description = "A list of AWS services to enable for the organization. Defaults to globally portable services available across all AWS commercial regions, facilitating cross-region migration and reducing vendor lock-in."
   type        = list(string)
   default = [
     "access-analyzer.amazonaws.com",
@@ -214,7 +213,7 @@ variable "service_control_policies" {
 }
 
 variable "enable_delegation" {
-  description = "Provides at the capability to delegate the management of a service to another AWS account."
+  description = "Provides at the capability to delegate the management of a service to another AWS account. Supports standard AWS delegation patterns for cross-account portability."
   type = object({
     access_analyzer = optional(object({
       # The id of the account to delegate the management of Access Analyzer to
