@@ -1,4 +1,3 @@
-
 ## Delegate the organization to the account
 resource "aws_organizations_delegated_administrator" "delegated_administrator" {
   count = var.enable_delegation.organizations != null ? 1 : 0
@@ -30,6 +29,14 @@ resource "aws_iam_service_linked_role" "access_analyzer" {
   aws_service_name = "access-analyzer.amazonaws.com"
   description      = "Service-Linked Role for Access Analyzer, used by the landing zone"
   tags             = var.tags
+}
+
+## Delegate the compute optimizer to the account
+resource "aws_organizations_delegated_administrator" "compute_optimizer_administrator" {
+  count = var.enable_delegation.compute_optimizer != null ? 1 : 0
+
+  account_id        = var.enable_delegation.compute_optimizer.account_id
+  service_principal = "compute-optimizer.amazonaws.com"
 }
 
 ## Delegate the guardduty to the account
@@ -87,4 +94,3 @@ resource "aws_cloudtrail_organization_delegated_admin_account" "cloudtrail_admin
 
   account_id = var.enable_delegation.cloudtrail.account_id
 }
-
