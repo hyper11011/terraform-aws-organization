@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -66,6 +65,7 @@ variable "enable_aws_services" {
     "controltower.amazonaws.com",
     "cost-optimization-hub.bcm.amazonaws.com",
     "guardduty.amazonaws.com",
+    "inspector.amazonaws.com",
     "ram.amazonaws.com",
     "securityhub.amazonaws.com",
     "servicequotas.amazonaws.com",
@@ -221,7 +221,7 @@ variable "enable_delegation" {
       account_id = string
     }), null)
     cloudtrail = optional(object({
-      # The id of the account to delegate the management of CloudTrail to
+      # The id of the account to delegate the CloudTrail to
       account_id = string
     }), null)
     guardduty = optional(object({
