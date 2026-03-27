@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -224,6 +223,10 @@ variable "enable_delegation" {
       # The id of the account to delegate the management of CloudTrail to
       account_id = string
     }), null)
+    compute_optimizer = optional(object({
+      # The id of the account to delegate the management of Compute Optimizer to
+      account_id = string
+    }), null)
     guardduty = optional(object({
       # The id of the account to delegate the management of GuardDuty to
       account_id = string
@@ -258,15 +261,16 @@ variable "enable_delegation" {
     }), null)
   })
   default = {
-    access_analyzer = null
-    cloudtrail      = null
-    guardduty       = null
-    inspection      = null
-    ipam            = null
-    macie           = null
-    organizations   = null
-    securityhub     = null
-    stacksets       = null
-    config          = null
+    access_analyzer  = null
+    cloudtrail       = null
+    compute_optimizer = null
+    guardduty        = null
+    inspection       = null
+    ipam             = null
+    macie            = null
+    organizations    = null
+    securityhub      = null
+    stacksets        = null
+    config           = null
   }
 }
