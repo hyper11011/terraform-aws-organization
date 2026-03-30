@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -66,6 +65,7 @@ variable "enable_aws_services" {
     "controltower.amazonaws.com",
     "cost-optimization-hub.bcm.amazonaws.com",
     "guardduty.amazonaws.com",
+    "inspector2.amazonaws.com",
     "ram.amazonaws.com",
     "securityhub.amazonaws.com",
     "servicequotas.amazonaws.com",
@@ -196,6 +196,29 @@ variable "backup_policies" {
     # If the organizational unit already exists, this is the target ID to attach the policy to
   }))
   default = {}
+}
+
+variable "default_backup_policy" {
+  description = "Default backup policy configuration for redundancy and disaster recovery. Enables daily backups with 35-day retention for critical resources."
+  type = object({
+    enabled = optional(bool, false)
+    # Whether to enable the default backup policy
+    vault_name = optional(string, "DefaultBackupVault")
+    # Name of the backup vault
+    retention_days = optional(number, 35)
+    # Number of days to retain backups
+    schedule = optional(string, "cron(0 5 ? * * *)")
+    # Backup schedule in cron format (default: daily at 5:00 AM UTC)
+    target_key = optional(string, "root")
+    # Target for the backup policy (root or OU key)
+  })
+  default = {
+    enabled        = false
+    vault_name     = "DefaultBackupVault"
+    retention_days = 35
+    schedule       = "cron(0 5 ? * * *)"
+    target_key     = "root"
+  }
 }
 
 variable "service_control_policies" {
