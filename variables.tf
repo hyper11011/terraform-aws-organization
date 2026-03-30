@@ -1,4 +1,3 @@
-
 variable "tags" {
   description = "A map of tags to resources provisioned by this module."
   type        = map(string)
@@ -269,4 +268,13 @@ variable "enable_delegation" {
     stacksets       = null
     config          = null
   }
+}
+
+# AWARE x2 Energy Efficiency Optimization
+# Default tagging policy for energy-efficient compute resources
+# Encourages ARM (t4g) and burstable instance families to reduce energy consumption
+variable "default_energy_efficiency_tagging_policy" {
+  description = "Whether to enable the default energy efficiency tagging policy for the organization. This policy enforces tagging standards that encourage ARM/burstable instance adoption (t4g family) for improved energy efficiency (x2 optimization)."
+  type        = bool
+  default     = true
 }
