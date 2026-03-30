@@ -103,6 +103,75 @@ resource "aws_organizations_policy_attachment" "backup_policy_attachment" {
 }
 
 #
+## Provision default backup policy for redundancy (AWARE x7 optimization)
+#
+resource "aws_organizations_policy" "default_backup_policy" {
+  count = var.default_backup_policy.enabled ? 1 : 0
+
+  name        = "DefaultBackupPolicy"
+  description = "AWARE: Default backup policy for redundancy and disaster recovery. Daily backups with ${var.default_backup_policy.retention_days}-day retention."
+  tags        = var.tags
+  type        = "BACKUP_POLICY"
+
+  content = jsonencode({
+    plans = {
+      default_backup_plan = {
+        regions = ["*"]
+        rules = {
+          daily_backup_rule = {
+            schedule_expression = var.default_backup_policy.schedule
+            target_backup_vault_name = var.default_backup_policy.vault_name
+            lifecycle = {
+              delete_after_days = var.default_backup_policy.retention_days
+            }
+            copy_actions = {}
+          }
+        }
+        selections = {
+          tags = {
+            backup_selection = {
+              iam_role_arn = "arn:aws:iam::*:role/service-role/AWSBackupDefaultServiceRole"
+              selection_tag = {
+                type  = "STRINGEQUALS"
+                key   = "Backup"
+                value = "enabled"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+## Attach default backup policy to the organizational root
+resource "aws_organizations_policy_attachment" "default_backup_policy_attachment_root" {
+  count = var.default_backup_policy.enabled && var.default_backup_policy.target_key == "root" ? 1 : 0
+
+  policy_id = aws_organizations_policy.default_backup_policy[0].id
+  target_id = local.root_ou
+}
+
+## Attach default backup policy to organizational units
+resource "aws_organizations_policy_attachment" "default_backup_policy_attachment" {
+  for_each = var.default_backup_policy.enabled && var.default_backup_policy.target_key != "root" ? { 1 = 1 } : {}
+
+  policy_id = aws_organizations_policy.default_backup_policy[0].id
+  target_id = coalesce(
+    try(local.all_ou_attributes[var.default_backup_policy.target_key].id, null),
+    try(local.current_units[var.default_backup_policy.target_key], null),
+  )
+
+  depends_on = [
+    aws_organizations_organizational_unit.level_1_ous,
+    aws_organizations_organizational_unit.level_2_ous,
+    aws_organizations_organizational_unit.level_3_ous,
+    aws_organizations_organizational_unit.level_4_ous,
+    aws_organizations_organizational_unit.level_5_ous
+  ]
+}
+
+#
 ## Provision any resource control policies
 #
 resource "aws_organizations_policy" "resource_control_policy" {
