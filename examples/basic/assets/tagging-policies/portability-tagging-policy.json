@@ -1,0 +1,10 @@
+{
+  "tags": {
+    "mandatory": ["PortabilityTier", "ArchitectureType"],
+    "allowed": {
+      "PortabilityTier": ["portable", "standard", "specialized", "legacy"],
+      "ArchitectureType": ["x86", "arm", "gpu", "custom"],
+      "MigrationReady": ["true", "false"]
+    }
+  }
+}
